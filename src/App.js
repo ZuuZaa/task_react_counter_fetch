@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import "./App.css";
 
@@ -8,12 +8,14 @@ function App() {
   const [posts, setPosts] = useState([]);
   const url = 'https://jsonplaceholder.typicode.com/todos/';
 
-  const increase = () => counter < 50 && setCounter(counter + 1);
-  const decrease = () => {
-    counter > 0 && setCounter(counter - 1);
+  const increase = useCallback(() => counter < 50 && setCounter(counter + 1),[counter]);
+  const decrease = useCallback( () => {
+    if (counter > 0) {
+      setCounter(counter - 1);
     const newPosts = posts.slice(0, counter - 1)
-    setPosts(newPosts)
-  } 
+    setPosts(newPosts)}
+    } 
+  ,[counter]);
 
   const getPost = async (id) => {
     try {
@@ -36,7 +38,7 @@ function App() {
       increase();
     }, 3000);
 
-    setRandomPost();
+    counter > 0 && setRandomPost();
 
     return () => clearInterval(intervalId);
   }, [counter]);
